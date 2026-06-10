@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunaverse Shop | Celestial Luxury</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Vazirmatn:wght@300;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'Inter', 'Vazirmatn', sans-serif; overflow-x: hidden; }
+        .text-luxury-gradient { background: linear-gradient(135deg, #a855f7 0%, #f0abfc 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(168, 85, 247, 0.2); }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        .product-card:hover { border-color: rgba(168, 85, 247, 0.5); transform: translateY(-5px); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        [dir="rtl"] { direction: rtl; }
+        .shimmer { background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent); background-size: 200% 100%; animation: shimmer 2s infinite; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const CONFIG = { email: "lunaverseshop24@gmail.com", pass: "Wali123380", wa: "+351967496946", addr: "Braga, Portugal" };
+        const LANGS = {
+            en: { home: 'Home', shop: 'Shop', admin: 'Dashboard', login: 'Login', cart: 'Cart', disc: '20% OFF ALL ITEMS', hero: 'Discover Your Inner Cosmos' },
+            pt: { home: 'Início', shop: 'Loja', admin: 'Painel', login: 'Entrar', cart: 'Carrinho', disc: '20% DE DESCONTO EM TUDO', hero: 'Descubra seu Cosmos Interior' },
+            ar: { home: 'الرئيسية', shop: 'المتجر', admin: 'لوحة التحكم', login: 'دخول', cart: 'السلة', disc: 'خصم ٢۰٪ على كل شيء', hero: 'اكتشف كونك الداخلي' }
+        };
+
+        function App() {
+            const [page, setPage] = useState('home');
+            const [lang, setLang] = useState('en');
+            const [isLogged, setIsLogged] = useState(false);
+            const [cart, setCart] = useState([]);
+            const [products, setProducts] = useState(() => {
+                const s = localStorage.getItem('luna_v3');
+                return s ? JSON.parse(s) : [
+                    { id: 1, name: 'Celestial Diamond Necklace', original: 2500, img: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800', cat: 'necklace' },
+                    { id: 2, name: 'Moonstone Silver Ring', original: 380, img: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800', cat: 'ring' }
+                ];
+            });
+
+            useEffect(() => { localStorage.setItem('luna_v3', JSON.stringify(products)); lucide.createIcons(); }, [products, page, lang]);
+
+            const t = LANGS[lang];
+            const calc = (p) => (p * 0.8).toLocaleString();
+
+            const Nav = () => (
+                <nav className="sticky top-0 z-50 glass border-b border-purple-900/30 px-6 py-4 flex justify-between items-center">
+                    <div className="flex items-center gap-2 cursor-pointer" onClick={() => setPage('home')}>
+                        <div className="bg-purple-600 p-2 rounded-xl"><i data-lucide="moon" className="text-white w-5 h-5"></i></div>
+                        <span className="text-xl font-black text-luxury-gradient">LUNAVERSE</span>
+                    </div>
+                    <div className="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                        <button onClick={() => setPage('home')} className={page==='home'?'text-purple-400':''}>{t.home}</button>
+                        <button onClick={() => setPage('shop')} className={page==='shop'?'="flex items-center gap-4">
+                        <select className="bg-transparent text-[10px] text-purple-400 font-bold border-none" onChange={e => setLang(e.target.value)} value={lang}>
+                            <option value="en">EN</option><option value="pt">PT</option><option value="ar">AR</option>
+                        </select>
+                        <button onClick={() => setPage('cart')} className="relative"><i data-lucide="shopping-bag" className="w-5 h-5 text-gray-300"></i>
+                            {cart.length>0 && <span className="absolute -top-1 -right-1 bg-purple-600 text-[8px] w-3.5 h-3.5 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
+                        </button>
+                        <button onClick={() => setPage('login')}><i data-lucide="user" className="w-5 h-5 text-gray-300"></i></button>
+                    </div>
+                </nav>
+            );
+
+            const Home = () => (
+                <div className="animate-fadeIn">
+                    <section className="relative h-[80vh] flex items-center px-10 overflow-hidden">
+                        <div className="z-10 max-w-3xl">
+                            <div className="inline-block px-4 py-1 rounded-full border border-red-500/30 bg-red-500/10 text-red-400 text-[10px] font-bold tracking-widest mb-6">{t.disc}</div>
+                            <h1 className="text-6xl lg:text-8xl font-black leading-tight mb-6">{t.hero}</h1>
+                            <button onClick={() => setPage('shop')} className="bg-white text-black px-10 py-4 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-purple-600 hover:text-white transition-all">Shop Collection</button>
+                        </div>
+                        <div className="absolute right-0 top-0 w-full lg:w-1/2 h-full opacity-50"><img src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=1200" className="w-full h-full object-cover" /></div>
+                    </section>
+                </div>
+            );
+
+            const Shop = () => (
+                <div className="p-10 animate-fadeIn">
+                    <h2 className="text-4xl font-black mb-10 italic">Our Creations</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {products.map(p => (
+                            <div key={p.id} className="glass rounded-[30px] overflow-hidden product-card group">
+                                <div className="h-96 relative"><img src={p.img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                    <div className="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-full">-20%</div>
+                                </div>
+                                <div className="p-6">
+                                    <h3 className="text-xl font-bold">{p.name}</h3>
+                                    <div className="flex items-center gap-3 mt-3">
+                                        <span className="text-2xl font-black text-purple-400">€{calc(p.original)}</span>
+                                        <span className="text-sm text-gray-600 line-through font-bold">€{p.original}</span>
+                                    </div>
+                                    <button onClick={() => { setCart([...cart, p]); alert('Added! 🌙'); }} className="w-full mt-6 bg-purple-600 py-3 rounded-xl font-bold hover:bg-purple-700 transition-all">Add to Cart</button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+
+            const Admin = () => {
+                const [f, setF] = useState({ name: '', price: '', img: '' });
+                const add = () => {
+                    if (!f.name || !f.price) return alert('Required fields missing');
+                    setProducts([...products, { id: Date.now(), name: f.name, original: Number(f.price), img: f.img || 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800', cat: 'ring' }]);
+                    alert('Launched! 🚀');
+                };
+                return (
+                    <div className="p-10 max-w-5xl mx-auto">
+                        <div className="flex justify-between mb-10 text-luxury-gradient font-black text-3xl italic">COMMAND CENTER</div>
+                        <div className="grid lg:grid-cols-2 gap-10">
+                            <div className="glass p-8 rounded-3xl space-y-4 h-fit">
+                                <h3 className="font-bold text-purple-400 uppercase text-xs">Add New Gem</h3>
+                                <input placeholder="Name" className="w-full bg-zinc-900 border border-gray-800 p-4 rounded-xl text-sm" onChange={e => setF({...f, name: e.target.value})} />
+                                <input placeholder="Price (€)" type="number" className="w-full bg-zinc-900 border border-gray-800 p-4 rounded-xl text-sm" onChange={e => setF({...f, price: e.target.value})} />
+                                <input placeholder="Cloudinary URL" className="w-full bg-zinc-900 border border-gray-800 p-4 rounded-xl text-sm" onChange={e => setF({...f, img: e.target.value})} />
+                                <button onClick={add} className="w-full bg-purple-600 py-4 rounded-xl font-black text-xs">PUBLISH NOW</button>
+                            </div>
+                            <div className="space-y-4">
+                                <h3 className="font-bold text-gray-500 uppercase text-xs">Inventory ({products.length})</h3>
+                                {products.map(p => (
+                                    <div key={p.id} className="glass p-4 rounded-2xl flex justify-between items-center group">
+                                        <div className="flex gap-4 items-center"><img src={p.img} className="w-12 h-12 rounded-lg object-cover" />
+                                            <div><p className="text-sm font-bold">{p.name}</p><p className="text-xs text-purple-400">€{p.original}</p></div>
+                                        </div>
+                                        <button onClick={() => setProducts(products.filter(x => x.id !== p.id))} className="text-red-500 p-2 opacity-0 group-hover:opacity-100"><i data-lucide="trash-2"></i></button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            const Login = () => {
+                const [e, setE] = useState(''); const [p, setP] = useState('');
+                const h = () => { if (e===CONFIG.email && p===CONFIG.pass) { setIsLogged(true); setPage('admin'); } else alert('Invalid Access'); };
+                return (
+                    <div className="h-[70vh] flex items-center justify-center p-6">
+                        <div className="glass p-10 rounded-[40px] w-full max-w-sm text-center">
+                            <h2 className="text-2xl font-black mb-8 italic">ADMIN ACCESS</h2>
+                            <input placeholder="Official Email" className="w-full bg-zinc-900 border border-purple-900/20 p-4 rounded-2xl mb-4" onChange={x => setE(x.target.value)} />
+                            <input placeholder="Password" type="password" className="w-full bg-zinc-900 border border-purple-900/20 p-4 rounded-2xl mb-8" onChange={x => setP(x.target.value)} />
+                            <button onClick={h} className="w-full bg-white text-black py-4 rounded-2xl font-black uppercase text-xs tracking-widest">Connect</button>
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className={lang==='ar'?'rtl':''}>
+                    <div className="bg-purple-700 py-1.5 text-[9px] font-black text-center tracking-[0.4em] uppercase">{t.disc} • BRAGA, PORTUGAL • {t.disc}</div>
+                    <Nav />
+                    {page==='home' && <Home />}
+                    {page==='shop' && <Shop />}
+                    {page==='login' && <Login />}
+                    {page==='admin' && (isLogged ? <Admin /> : <Login />)}
+                    {page==='cart' && (
+                        <div className="p-20 text-center animate-fadeIn max-w-2xl mx-auto">
+                            <h2 className="text-4xl font-black mb-10 italic tracking-tighter">Your Collection</h2>
+                            {cart.length > 0 ? (
+                                <div className="space-y-4">{cart.map((i,x) => <div key={x} className="glass p-5 rounded-2xl flex justify-between font-bold"><span>{i.name}</span><span className="text-purple-400">€{calc(i.original)}</span></div>)}
+                                    <button className="w-full mt-10 bg-white text-black py-4 rounded-2xl font-black uppercase text-xs tracking-widest">Pay with Card</button>
+                                </div>
+                            ) : <p className="text-gray-500">The cosmos is empty.</p>}
+                        </div>
+                    )}
+                    <footer className="p-20 border-t border-purple-900/10 text-center opacity-40 text-[10px] tracking-widest">© 2024 LUNAVERSE SHOP | BRAGA, PORTUGAL | WHATSAPP: +351 967 496 946</footer>
+                    <a href={`https://wa.me/${CONFIG.wa}`} className="fixed bottom-8 left-8 bg-green-500 p-4 rounded-full shadow-2xl animate-float z-50"><i data-lucide="message-circle" className="w-6 h-6"></i></a>
+                </div>
+            );
+        }
+        const r = ReactDOM.createRoot(document.getElementById('root')); r.render(<App />);
+    </script>
+</body>
+</html>
